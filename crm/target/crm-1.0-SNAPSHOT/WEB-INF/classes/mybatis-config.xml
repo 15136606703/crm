@@ -6,12 +6,12 @@
 	
   <properties resource="jdbc.properties"/>
   
- <!-- <typeAliases>
-  
-  	<package name="com.xxx.domain"/>
-  	
-  
-  </typeAliases>-->
+  <typeAliases>
+
+  	<package name="com.zh.crm.settings.domain"/>
+
+
+  </typeAliases>
   
   <environments default="development">
     <environment id="development">
@@ -28,7 +28,7 @@
  
   <mappers>
    
-      <package name="com.xxx.dao"/>
+      <package name="com.zh.crm.settings.dao"/>
     
   </mappers>
 </configuration>

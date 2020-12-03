@@ -1,6 +1,7 @@
 package com.zh.settings.test;
 
 import com.zh.crm.utils.DateTimeUtil;
+import com.zh.crm.utils.MD5Util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -12,11 +13,12 @@ public class Test1 {
         /*
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String str = sdf.format(date);*/
+        String str = sdf.format(date);
         //当前系统时间
         String currenTime = DateTimeUtil.getSysTime();
-        int count = expireTime.compareTo(currenTime);
-
-        System.out.println(count);
+        int count = expireTime.compareTo(currenTime);*/
+        String pwd = "123";
+        String mdpwd = MD5Util.getMD5(pwd);
+        System.out.println(mdpwd);
     }
 }

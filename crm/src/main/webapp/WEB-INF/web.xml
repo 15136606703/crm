@@ -4,7 +4,9 @@
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
-  
+
+
+  <!-- 用户控制器 -->
   <servlet>
     <servlet-name>UserController</servlet-name>
     <servlet-class>com.zh.crm.settings.web.controller.UserController</servlet-class>
@@ -12,10 +14,9 @@
 
   <servlet-mapping>
     <servlet-name>UserController</servlet-name>
-    <url-pattern>/settings/user/xxx.do</url-pattern>
+    <url-pattern>/settings/user/login.do</url-pattern>
     
   </servlet-mapping>
-  
   
   
 </web-app>
