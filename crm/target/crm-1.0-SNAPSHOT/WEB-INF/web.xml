@@ -5,7 +5,28 @@
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
 
-
+  <!--
+    过滤器
+    对于url-pattern形式： /abc/find.do  ,/abc/*  ,*.do  ,/abc/*  ,/*
+  -->
+  <filter>
+    <filter-name>EncodingFilter</filter-name>
+    <filter-class>com.zh.crm.web.filter.EncodingFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>EncodingFilter</filter-name>
+    <url-pattern>*.do</url-pattern>
+  </filter-mapping>
+  <!-- 登陆过滤器-->
+  <filter>
+    <filter-name>LoginFilter</filter-name>
+    <filter-class>com.zh.crm.web.filter.LoginFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>LoginFilter</filter-name>
+    <url-pattern>*.do</url-pattern>
+    <url-pattern>*.jsp</url-pattern>
+  </filter-mapping>
   <!-- 用户控制器 -->
   <servlet>
     <servlet-name>UserController</servlet-name>
