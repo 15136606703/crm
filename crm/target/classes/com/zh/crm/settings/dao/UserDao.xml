@@ -9,7 +9,12 @@
 
       SELECT * FROM  tbl_user where loginAct = #{loginAct} and loginPwd =#{loginPwd}
     </select>
-	
+
+    <select id="getUserList" resultType="User">
+
+        SELECT * FROM  tbl_user
+    </select>
+
 </mapper>
 
 

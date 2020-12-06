@@ -13,7 +13,7 @@ public class EncodingFilter implements Filter {
     }
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
-        System.out.println("进入到咕噜字符编码的过滤器");
+        System.out.println("进入到过滤字符编码的过滤器");
         //过滤post请求中的中文参数乱码
         req.setCharacterEncoding("UTF-8");
 
