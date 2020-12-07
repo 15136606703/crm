@@ -79,9 +79,26 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
                     if (data.success){
 
                         //添加成功刷新列表
-                        pageList(1,2)
+                        /*
+						*
+						* $("#activityPage").bs_pagination('getOption', 'currentPage'):
+						* 		操作后停留在当前页
+						*
+						* $("#activityPage").bs_pagination('getOption', 'rowsPerPage')
+						* 		操作后维持已经设置好的每页展现的记录数
+						*
+						* 这两个参数不需要我们进行任何的修改操作
+						* 	直接使用即可
+						*
+						*
+						*
+						* */
+
+                        //做完添加操作后，应该回到第一页，维持每页展现的记录数
+
+                        pageList(1,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
 						//清空模态窗口中的数据
-						//$("#activityAddForm")[0].reset();
+						$("#activityAddForm")[0].reset();
 						//关闭模态窗口
                         $("#createActivityModal").modal("hide");
                     }else{
@@ -99,6 +116,7 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
 		    /*
 		    * 点击查询按钮时，先把搜索框的信息保存起来
 		    * */
+           var a = $("#search-startDate").val()
             $("#hidden-name").val($.trim($("#search-name").val()));
             $("#hidden-owner").val($.trim($("#search-owner").val()));
             $("#hidden-startDate").val($.trim($("#search-startDate").val()));
@@ -158,7 +176,9 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
                             if (data.success){
                                 alert("删除成功")
                                 //添加成功刷新列表
-                                pageList(1,2)
+                                //删除成功后
+                                //回到第一页，维持每页展现的记录数
+                                pageList(1,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
                             }else{
                                 alert("删除失败")
                             }
@@ -168,7 +188,7 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
 			}
 		})
 
-        $("editBtn").click(function () {
+        $("#editBtn").click(function () {
 
             var $xz = $("input[name=xz]:checked");
             if($xz.length == 0){
@@ -184,12 +204,61 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
                     type:"get",
                     dataType:"json",
                     success:function (data) {
+                        var html = "<option></option>";
+                        $.each(data.uList,function (i,n) {
+
+                            html+="<option value='"+n.id+"'>"+n.name+"</option>";
+                        })
+                        $("#edit-owner").html(html)
+
+						$("#edit-name").val(data.a.name)
+						$("#edit-owner").val(data.a.owner)
+						$("#edit-startDate").val(data.a.startDate)
+						$("#edit-endDate").val(data.a.endDate)
+						$("#edit-cost").val(data.a.cost)
+						$("#edit-description").val(data.a.description)
+						$("#edit-id").val(data.a.id)
 
 
+                        $("#editActivityModal").modal("show");
                     }
                 })
             }
+        })
 
+		//修改
+		$("#updateBtn").click(function () {
+            $.ajax({
+                url:"workbench/activity/update.do",
+                data:{
+                    "id":$.trim($("#edit-id").val()),
+                    "owner":$.trim($("#edit-owner").val()),
+                    "name":$.trim($("#edit-name").val()),
+                    "startDate":$.trim($("#edit-startDate").val()),
+                    "endDate":$.trim($("#edit-endDate").val()),
+                    "cost":$.trim($("#edit-cost").val()),
+                    "description":$.trim($("#edit-description").val())
+                },
+                type:"post",
+                dataType:"json",
+                success:function (data) {
+
+                    if (data.success){
+
+                        /*
+
+							修改操作后，应该维持在当前页，维持每页展现的记录数
+
+						 */
+                        pageList($("#activityPage").bs_pagination('getOption', 'currentPage')
+                            ,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
+                        //关闭模态窗口
+                        $("#editActivityModal").modal("hide");
+                    }else{
+                        alert("修改失败")
+                    }
+                }
+            })
         })
 	});
 
@@ -226,7 +295,7 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
 ''
 						html+='<tr class="active"> '
 						html+='<td><input type="checkbox" name="xz" value="'+n.id+'" /></td> '
-						html+='<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href=\'workbench/activity/detail.do ? id =\'+n.id+\';">'+n.name+'</a></td>'
+						html+='<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href=\'workbench/activity/detail.do?id ='+n.id+'\';">'+n.name+'</a></td>'
 						html+='<td>'+n.owner+'</td>'
 						html+='<td>'+n.startDate+'</td>'
 						html+='<td>'+n.endDate+'</td>'
@@ -348,7 +417,7 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
 				<div class="modal-body">
 				
 					<form class="form-horizontal" role="form">
-					
+						<input type="hidden" id="edit-id">
 						<div class="form-group">
 							<label for="edit-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
@@ -356,20 +425,20 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
 
 								</select>
 							</div>
-                            <label for="edit-name" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
+                            <label for="edit-marketActivityName" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
                             <div class="col-sm-10" style="width: 300px;">
-                                <input type="text" class="form-control" id="edit-marketActivityName" value="发传单">
+                                <input type="text" class="form-control" id="edit-name" >
                             </div>
 						</div>
 
 						<div class="form-group">
 							<label for="edit-startTime" class="col-sm-2 control-label">开始日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-startDate" value="2020-10-10">
+								<input type="text" class="form-control time" id="edit-startDate" >
 							</div>
 							<label for="edit-endTime" class="col-sm-2 control-label">结束日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-endDate" value="2020-10-20">
+								<input type="text" class="form-control time" id="edit-endDate">
 							</div>
 						</div>
 						
@@ -383,7 +452,7 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
 						<div class="form-group">
 							<label for="edit-describe" class="col-sm-2 control-label">描述</label>
 							<div class="col-sm-10" style="width: 81%;">
-								<textarea class="form-control" rows="3" id="edit-descrie"></textarea>
+								<textarea class="form-control" rows="3" id="edit-description"></textarea>
 							</div>
 						</div>
 						
@@ -392,7 +461,7 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">更新</button>
+					<button type="button" class="btn btn-primary" id="updateBtn">更新</button>
 				</div>
 			</div>
 		</div>
@@ -432,13 +501,13 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">开始日期</div>
-					  <input class="form-control time" type="text" id="startTime" id="search-startDate"/>
+					  <input class="form-control time" type="text"  id="search-startDate"/>
 				    </div>
 				  </div>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">结束日期</div>
-					  <input class="form-control time" type="text" id="endTime" id="search-endDate">
+					  <input class="form-control time" type="text"  id="search-endDate">
 				    </div>
 				  </div>
 				  
