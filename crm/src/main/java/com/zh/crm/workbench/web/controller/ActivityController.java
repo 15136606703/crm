@@ -36,10 +36,37 @@ public class ActivityController extends HttpServlet {
             save(request,response);
         }else if("/workbench/activity/pageList.do".equals(path)){
             pageList(request,response);
+        }else if("/workbench/activity/delete.do".equals(path)){
+            delete(request,response);
         }
     }
 
-    //分页查询
+    /**
+     * 删除
+     *@Description 张浩
+     *@param
+     * @param request
+     * @param response
+     *@return void
+     *@date 2020-12-7 15:12
+     *@auther Administrator
+     */
+    private void delete(HttpServletRequest request, HttpServletResponse response) {
+        String ids[] = request.getParameterValues("id");
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        boolean flag =  as.delete(ids);
+        PrintJson.printJsonFlag(response,flag);
+    }
+
+    /**
+     * 分页查询
+     *@Description 张浩
+     * @param request
+     * @param response
+     *@return void
+     *@date 2020-12-7 09:25
+     *@auther Administrator
+     */
     private void pageList(HttpServletRequest request, HttpServletResponse response) {
 
         int  pageNum = Integer.valueOf(request.getParameter("pageNum"));
@@ -76,7 +103,7 @@ public class ActivityController extends HttpServlet {
         String owner = request.getParameter("owner");
         String name = request.getParameter("name");
         String startDate = request.getParameter("startDate");
-        String endDate = request.getParameter("startDate");
+        String endDate = request.getParameter("endDate");
         String cost = request.getParameter("cost");
         String description = request.getParameter("description");
         String createTime = DateTimeUtil.getSysTime();

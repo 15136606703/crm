@@ -2,6 +2,9 @@ package com.zh.crm.vo;
 
 import java.util.List;
 
+/*
+* 分页返回类
+* */
 public class PaginationVo<T> {
 
     private int total;

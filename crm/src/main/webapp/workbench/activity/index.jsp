@@ -22,19 +22,18 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
 <script type="text/javascript">
 
 	$(function(){
+        //加载日历控件
+        $(".time").datetimepicker({
+            minView: "month",
+            language:  'zh-CN',
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayBtn: true,
+            pickerPosition: "bottom-left"
+        });
 
 		//创建按钮绑定事件
 		$("#addBtn").click(function () {
-
-		    //加载日历控件
-            $(".time").datetimepicker({
-                minView: "month",
-                language:  'zh-CN',
-                format: 'yyyy-mm-dd',
-                autoclose: true,
-                todayBtn: true,
-                pickerPosition: "bottom-left"
-            });
 
 			$.ajax({
 				url:"workbench/activity/getUserList.do",
@@ -128,6 +127,70 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
         $("#activityBody").on("click",$("input[name=xz]"),function () {
             $("#qx").prop("checked",$("input[name=xz]").length == $("input[name=xz]:checked").length)
         })
+
+		//删除
+		$("#deleteBtn").click(function () {
+			var $xz = $("input[name=xz]:checked")
+			if($xz.length == 0){
+
+				alert("请选择需要删除的记录")
+			}else {
+
+			    if(confirm("确定删除所选的记录吗")){
+
+                    //拼接参数
+                    var param = "";
+                    //遍历$xz的dom对象
+                    for (var i= 0;i<$xz.length;i++){
+                        param+= "id="+$($xz[i]).val();
+                        if(i<$xz.length - 1){
+                            param += "&"
+                        }
+                    }
+                    //alert(param)
+                    $.ajax({
+                        url:"workbench/activity/delete.do",
+                        data:param,
+                        type:"post",
+                        dataType:"json",
+                        success:function (data) {
+
+                            if (data.success){
+                                alert("删除成功")
+                                //添加成功刷新列表
+                                pageList(1,2)
+                            }else{
+                                alert("删除失败")
+                            }
+                        }
+                    })
+                }
+			}
+		})
+
+        $("editBtn").click(function () {
+
+            var $xz = $("input[name=xz]:checked");
+            if($xz.length == 0){
+                alert("请选择要修改的记录")
+            }else if($xz.length > 1 ){
+                alert("只能选择一条")
+            }else {
+                var id = $xz.val();
+                //alert(param)
+                $.ajax({
+                    url:"workbench/activity/getUserListAndActivity.do",
+                    data:{id:id},
+                    type:"get",
+                    dataType:"json",
+                    success:function (data) {
+
+
+                    }
+                })
+            }
+
+        })
 	});
 
 	/*
@@ -135,7 +198,8 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
 	* */
 	function pageList(pageNum,pageSize) {
 
-
+		//将全选的复选框的变成不选
+		$("#qx").prop("checked",false)
 
         //查询前，将隐藏域中保存的信息取出来，重新赋予到搜索框中
         $("#search-name").val($.trim($("#hidden-name").val()));
@@ -288,13 +352,11 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
 						<div class="form-group">
 							<label for="edit-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="edit-marketActivityOwner">
-								  <option>zhangsan</option>
-								  <option>lisi</option>
-								  <option>wangwu</option>
+								<select class="form-control" id="edit-owner">
+
 								</select>
 							</div>
-                            <label for="edit-marketActivityName" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
+                            <label for="edit-name" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
                             <div class="col-sm-10" style="width: 300px;">
                                 <input type="text" class="form-control" id="edit-marketActivityName" value="发传单">
                             </div>
@@ -303,25 +365,25 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
 						<div class="form-group">
 							<label for="edit-startTime" class="col-sm-2 control-label">开始日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-startTime" value="2020-10-10">
+								<input type="text" class="form-control" id="edit-startDate" value="2020-10-10">
 							</div>
 							<label for="edit-endTime" class="col-sm-2 control-label">结束日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-endTime" value="2020-10-20">
+								<input type="text" class="form-control" id="edit-endDate" value="2020-10-20">
 							</div>
 						</div>
 						
 						<div class="form-group">
 							<label for="edit-cost" class="col-sm-2 control-label">成本</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-cost" value="5,000">
+								<input type="text" class="form-control" id="edit-cost" >
 							</div>
 						</div>
 						
 						<div class="form-group">
 							<label for="edit-describe" class="col-sm-2 control-label">描述</label>
 							<div class="col-sm-10" style="width: 81%;">
-								<textarea class="form-control" rows="3" id="edit-describe">市场活动Marketing，是指品牌主办或参与的展览会议与公关市场活动，包括自行主办的各类研讨会、客户交流会、演示会、新产品发布会、体验会、答谢会、年会和出席参加并布展或演讲的展览会、研讨会、行业交流会、颁奖典礼等</textarea>
+								<textarea class="form-control" rows="3" id="edit-descrie"></textarea>
 							</div>
 						</div>
 						
@@ -370,13 +432,13 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">开始日期</div>
-					  <input class="form-control" type="text" id="startTime" id="search-startDate"/>
+					  <input class="form-control time" type="text" id="startTime" id="search-startDate"/>
 				    </div>
 				  </div>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">结束日期</div>
-					  <input class="form-control" type="text" id="endTime" id="search-endDate">
+					  <input class="form-control time" type="text" id="endTime" id="search-endDate">
 				    </div>
 				  </div>
 				  
@@ -387,8 +449,8 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 5px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
 				  <button type="button" class="btn btn-primary" id="addBtn"><span class="glyphicon glyphicon-plus"></span> 创建</button>
-				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editActivityModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
-				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
+				  <button type="button" class="btn btn-default" id="editBtn"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
+				  <button type="button" class="btn btn-danger" id="deleteBtn" ><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
 				
 			</div>
