@@ -5,6 +5,24 @@
 
 <mapper namespace="com.zh.crm.workbench.dao.ActivityDao">
 
+    <update id="update">
+        update tbl_activity set
+            owner = #{owner},
+            name = #{name},
+            startDate= #{startDate},
+            endDate= #{endDate},
+            cost= #{cost},
+            description= #{description},
+            editTime= #{editTime},
+            editBy= #{editBy}
+            WHERE id=#{id}
+
+    </update>
+
+    <select id="getById" resultType="Activity">
+        SELECT * FROM  tbl_activity WHERE  id = #{id}
+    </select>
+
     <select id="getTotalByCondition"  resultType="int">
         select count(*)
 

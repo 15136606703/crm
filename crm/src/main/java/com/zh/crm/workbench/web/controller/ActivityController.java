@@ -23,6 +23,8 @@ import java.util.Map;
 
 public class ActivityController extends HttpServlet {
 
+
+
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //super.service(request, response);
@@ -38,7 +40,51 @@ public class ActivityController extends HttpServlet {
             pageList(request,response);
         }else if("/workbench/activity/delete.do".equals(path)){
             delete(request,response);
+        }else if("/workbench/activity/getUserListAndActivity.do".equals(path)){
+            getUserListAndActivity(request,response);
+        }else if("/workbench/activity/update.do".equals(path)){
+            update(request,response);
         }
+    }
+
+    private void update(HttpServletRequest request, HttpServletResponse response) {
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        String id = request.getParameter("id");
+        String owner = request.getParameter("owner");
+        String name = request.getParameter("name");
+        String startDate = request.getParameter("startDate");
+        String endDate = request.getParameter("endDate");
+        String cost = request.getParameter("cost");
+        String description = request.getParameter("description");
+
+        String editTime = DateTimeUtil.getSysTime();
+        //创建人
+        String editBy = ((User)request.getSession().getAttribute("user")).getName();
+
+        Activity a = new Activity();
+        a.setId(id);
+        a.setOwner(owner);
+        a.setName(name);
+        a.setStartDate(startDate);
+        a.setEndDate(endDate);
+        a.setCost(cost);
+        a.setDescription(description);
+        a.setEditTime(editTime);
+        a.setEditBy(editBy);
+
+
+        boolean flag = as.update(a);
+
+        PrintJson.printJsonFlag(response,flag);
+    }
+
+    private void getUserListAndActivity(HttpServletRequest request, HttpServletResponse response) {
+
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+
+        String id = request.getParameter("id");
+        Map<String,Object> map =  as.getUserListAndActivity(id);
+        PrintJson.printJsonObj(response,map);
     }
 
     /**
@@ -52,8 +98,8 @@ public class ActivityController extends HttpServlet {
      *@auther Administrator
      */
     private void delete(HttpServletRequest request, HttpServletResponse response) {
-        String ids[] = request.getParameterValues("id");
         ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        String ids[] = request.getParameterValues("id");
         boolean flag =  as.delete(ids);
         PrintJson.printJsonFlag(response,flag);
     }
@@ -68,6 +114,7 @@ public class ActivityController extends HttpServlet {
      *@auther Administrator
      */
     private void pageList(HttpServletRequest request, HttpServletResponse response) {
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
 
         int  pageNum = Integer.valueOf(request.getParameter("pageNum"));
         int pageSize = Integer.valueOf(request.getParameter("pageSize"));
@@ -87,7 +134,6 @@ public class ActivityController extends HttpServlet {
         map.put("endDate",endDate);
 
 
-        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
         PaginationVo<Activity> vo =  as.pageList(map);
 
         PrintJson.printJsonObj(response,vo);
@@ -99,6 +145,7 @@ public class ActivityController extends HttpServlet {
     * 添加市场活动
     * */
     private void save(HttpServletRequest request, HttpServletResponse response) {
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
         String id = UUIDUtil.getUUID();
         String owner = request.getParameter("owner");
         String name = request.getParameter("name");
@@ -121,7 +168,6 @@ public class ActivityController extends HttpServlet {
         a.setCreateTime(createTime);
         a.setCreateBy(createBy);
 
-        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
 
         boolean flag = as.save(a);
 
@@ -130,11 +176,12 @@ public class ActivityController extends HttpServlet {
 
     private void getUserList(HttpServletRequest request, HttpServletResponse response) {
 
+        UserService us = (UserService) ServiceFactory.getService(new UserServiceImpl());
         System.out.println("取得用户信息表");
         //业务层开发统一使用代理形态
        // ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
 
-        UserService us = (UserService) ServiceFactory.getService(new UserServiceImpl());
+
         List<User> uList = us.getUserList();
         Map<String,Object> map = new HashMap<String, Object>();
         map.put("success" ,true);
