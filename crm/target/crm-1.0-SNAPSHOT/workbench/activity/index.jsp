@@ -29,9 +29,12 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
             format: 'yyyy-mm-dd',
             autoclose: true,
             todayBtn: true,
-            pickerPosition: "bottom-left"
+            pickerPosition: "bottom-left",
         });
-
+		//清除的代码
+		$(".glyphicon-remove").click(function(){
+			$($($(this).parent()).prev()).val("");
+		})
 		//创建按钮绑定事件
 		$("#addBtn").click(function () {
 
@@ -295,7 +298,7 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
 ''
 						html+='<tr class="active"> '
 						html+='<td><input type="checkbox" name="xz" value="'+n.id+'" /></td> '
-						html+='<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href=\'workbench/activity/detail.do?id ='+n.id+'\';">'+n.name+'</a></td>'
+						html += '<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href=\'workbench/activity/detail.do?id='+n.id+'\';">'+n.name+'</a></td>';
 						html+='<td>'+n.owner+'</td>'
 						html+='<td>'+n.startDate+'</td>'
 						html+='<td>'+n.endDate+'</td>'
@@ -370,6 +373,7 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
 							<label for="create-startTime" class="col-sm-2 control-label">开始日期</label>
 							<div class="col-sm-10" style="width: 300px;">
 								<input type="text" class="form-control time" id="create-startDate"  autocomplete="off">
+
 							</div>
 							<label for="create-endTime" class="col-sm-2 control-label">结束日期</label>
 							<div class="col-sm-10" style="width: 300px;">
@@ -502,12 +506,14 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
 				    <div class="input-group">
 				      <div class="input-group-addon">开始日期</div>
 					  <input class="form-control time" type="text"  id="search-startDate"/>
+						<span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
 				    </div>
 				  </div>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">结束日期</div>
 					  <input class="form-control time" type="text"  id="search-endDate">
+						<span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
 				    </div>
 				  </div>
 				  
@@ -537,7 +543,7 @@ String basePath = request.getScheme()+ "://" + request.getServerName() + ":" + r
 					<tbody id="activityBody">
 						<%--<tr class="active">
 							<td><input type="checkbox" /></td>
-							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">发传单</a></td>
+							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">发传单</a></td>
                             <td>zhangsan</td>
 							<td>2020-10-10</td>
 							<td>2020-10-20</td>

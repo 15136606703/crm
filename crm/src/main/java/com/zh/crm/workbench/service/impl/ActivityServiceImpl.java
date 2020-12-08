@@ -7,6 +7,7 @@ import com.zh.crm.vo.PaginationVo;
 import com.zh.crm.workbench.dao.ActivityDao;
 import com.zh.crm.workbench.dao.ActivityRemarkDao;
 import com.zh.crm.workbench.domain.Activity;
+import com.zh.crm.workbench.domain.ActivityRemark;
 import com.zh.crm.workbench.service.ActivityService;
 import org.apache.ibatis.session.SqlSession;
 
@@ -20,6 +21,7 @@ public class ActivityServiceImpl implements ActivityService {
     private ActivityDao activityDao = SqlSessionUtil.getSqlSession().getMapper(ActivityDao.class);
     private ActivityRemarkDao remarkDao = SqlSessionUtil.getSqlSession().getMapper(ActivityRemarkDao.class);
     private UserDao userDao = SqlSessionUtil.getSqlSession().getMapper(UserDao.class);
+
     public boolean save(Activity a) {
         boolean flag = true;
         int count = activityDao.save(a);
@@ -77,4 +79,48 @@ public class ActivityServiceImpl implements ActivityService {
         }
         return flag;
     }
+
+    public Activity detail(String id) {
+
+        Activity a =  activityDao.detail(id);
+        return a;
+    }
+
+    public List<ActivityRemark> getRemarkListByAid(String activityId) {
+
+        List<ActivityRemark> rList =  remarkDao.getRemarkListByAid(activityId);
+        return rList;
+    }
+
+    public boolean deleteRemark(String id) {
+        boolean flag = true;
+
+        int count = remarkDao.deleteById(id);
+        if(count!=1){
+            flag = false;
+        }
+        return flag;
+    }
+
+    public boolean saveRemark(ActivityRemark ar) {
+        boolean flag = true;
+        int count = remarkDao.saveRemark(ar);
+        if (count!=1){
+
+            flag = false;
+        }
+        return flag;
+    }
+
+    public boolean updateRemark(ActivityRemark ar) {
+
+        boolean flag = true;
+        int count = remarkDao.updateRemark(ar);
+        if (count!=1){
+
+            flag = false;
+        }
+        return flag;
+    }
+
 }
